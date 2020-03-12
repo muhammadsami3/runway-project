@@ -1,0 +1,18 @@
+namespace: ${namespace}
+stacker_bucket: ${stacker_bucket_name}
+
+sys_path: ./
+
+stacks:  
+  cet-013-vpc:
+    template_path: templates/cet-005-vpc-cfn.yaml  # also supports json templates
+    variables:
+      VPCName: ${VPCName_param}
+  cet-013-servers:
+    template_path: templates/cet-005-servers-cfn.yaml  # also supports json templates
+    variables:
+      NetworkStackName: cet-013-vpc
+      BasionHostSubnetId: ${output cet-013-vpc::PublicSubnet1}
+      BastionAllowedIP: '196.204.9.196'
+      KeyName: 'us-east1'
+     

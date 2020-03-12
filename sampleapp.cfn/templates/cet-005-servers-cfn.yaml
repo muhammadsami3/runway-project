@@ -1,0 +1,665 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'cet2005 Servers CFN
+- Resources:
+*Bastion host.
+*An instance in every subnet.
+*Bastion security group (allow ssh from specific IP).
+*Public Instance security group (allow 80 from everywhere, 22 from VPC
+CIDR).
+*Private Instance security group (allow 80, 22 from VPC CIDR).
+- Parameters:
+*Key name.
+*Bastion allowed IP.
+*Instances types'
+
+Parameters:
+
+  KeyName:
+    Description: Name of SSH KeyPair
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Provide the name of an existing SSH key pair    
+
+  BastionAllowedIP:
+    Description: Bastion allowed IP
+    Type: String
+    Default: 10.40.1.2
+
+  VpcCIDR:  
+    Description: Please enter the IP range (CIDR notation) for VPC to allow access in security groups
+    Type: String
+    Default: 10.40.0.0/16  
+
+  BasionHostType: 
+    Description: "EC2 Public instance 01 type"
+    Type: String
+    Default: "t2.micro"
+    AllowedValues: 
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - m1.small
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      - m2.xlarge
+      - m2.2xlarge
+      - m2.4xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c1.medium
+      - c1.xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - hi1.4xlarge
+      - hs1.8xlarge
+      - cr1.8xlarge
+      - cc2.8xlarge
+      - cg1.4xlarge
+
+  PublicInstance01Type: 
+    Description: "EC2 Public instance 01 type"
+    Type: String
+    Default: "t2.micro"
+    AllowedValues: 
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - m1.small
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      - m2.xlarge
+      - m2.2xlarge
+      - m2.4xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c1.medium
+      - c1.xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - hi1.4xlarge
+      - hs1.8xlarge
+      - cr1.8xlarge
+      - cc2.8xlarge
+      - cg1.4xlarge
+
+  PublicInstance02Type: 
+    Description: "EC2 Public instance  02 type"
+    Type: String
+    Default: "t2.micro"
+    AllowedValues: 
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - m1.small
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      - m2.xlarge
+      - m2.2xlarge
+      - m2.4xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c1.medium
+      - c1.xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - hi1.4xlarge
+      - hs1.8xlarge
+      - cr1.8xlarge
+      - cc2.8xlarge
+      - cg1.4xlarge
+
+  PrivateInstance01Type: 
+    Description: "EC2 Private instance 01 type"
+    Type: String
+    Default: "t2.micro"
+    AllowedValues: 
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - m1.small
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      - m2.xlarge
+      - m2.2xlarge
+      - m2.4xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c1.medium
+      - c1.xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - hi1.4xlarge
+      - hs1.8xlarge
+      - cr1.8xlarge
+      - cc2.8xlarge
+      - cg1.4xlarge
+
+  PrivateInstance02Type: 
+    Description: "EC2 Private instance 01 type"
+    Type: String
+    Default: "t2.micro"
+    AllowedValues: 
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - m1.small
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      - m2.xlarge
+      - m2.2xlarge
+      - m2.4xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c1.medium
+      - c1.xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - hi1.4xlarge
+      - hs1.8xlarge
+      - cr1.8xlarge
+      - cc2.8xlarge
+      - cg1.4xlarge
+
+  PublicInstance01LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+
+  BasionHostAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+
+
+  PublicInstance02LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+
+  PrivateInstance01LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+
+  PrivateInstance02LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+
+  BasionHostSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Choose a Public Subnet for BasionHosts
+
+  NetworkStackName:
+    Description: Name of the base stack with all infra resources
+    Type: String
+    Default: cet013-vpc
+
+Resources:
+  BastionHost: 
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref BasionHostType
+      ImageId: !Ref BasionHostAmiId
+      KeyName: !Ref KeyName      
+      SecurityGroupIds:
+        - !Ref BasionHostSecurityGroup
+      SubnetId: !Ref  BasionHostSubnetId 
+      Tags:
+        - Key: Name
+          Value: BastionHost-CET005 
+
+  PublicInstance01: 
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          Install: ["Install"]
+        Install:
+          packages:
+            yum:
+              httpd: []
+          commands:
+            copy: 
+              command: !Join 
+              - ""
+              - - "aws s3 cp s3://samisami/index.html /var/www/html"
+          services:
+            sysvinit:
+              httpd:
+                enabled: "true"
+                ensureRunning: "true"
+    Properties:
+      InstanceType: !Ref PublicInstance01Type
+      ImageId: !Ref PublicInstance01LatestAmiId
+      KeyName: !Ref KeyName    
+      IamInstanceProfile:
+        !Join
+          - ''
+          - - ''
+            - !Ref AWS::StackName
+            - '-S3InstanceProfile'
+      SecurityGroupIds:
+        - !Ref PublicInstanceSecurityGroup
+      SubnetId:
+        Fn::ImportValue:
+          Fn::Sub: '${NetworkStackName}-PublicSubnet1'
+      UserData: 
+          Fn::Base64: !Sub "#!/bin/bash -xe \n
+                             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource PublicInstance01 --configsets Install --region  ${AWS::Region}"
+           
+      Tags:
+        - Key: Name
+          Value: PublicInstance01-CET005 
+
+  PublicInstance02: 
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          Install: ["Install"]
+        Install:
+          packages:
+            yum:
+              httpd: []
+          commands:
+            copy: 
+              command: !Join 
+              - ""
+              - - "aws s3 cp s3://samisami/index.html /var/www/html"
+          services:
+            sysvinit:
+              httpd:
+                enabled: "true"
+                ensureRunning: "true"
+    Properties:
+      InstanceType: !Ref PublicInstance02Type
+      ImageId: !Ref PublicInstance02LatestAmiId
+      KeyName: !Ref KeyName
+      IamInstanceProfile:
+        !Join
+          - ''
+          - - ''
+            - !Ref AWS::StackName
+            - '-S3InstanceProfile'
+      SecurityGroupIds:
+        - !Ref PublicInstanceSecurityGroup
+      SubnetId: 
+        Fn::ImportValue:
+          Fn::Sub: "${NetworkStackName}-PublicSubnet2"
+      Tags:
+        - Key: Name
+          Value: PublicInstance02-CET005
+      UserData: 
+          Fn::Base64: !Sub "#!/bin/bash -xe \n
+                             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource PublicInstance02 --configsets Install --region  ${AWS::Region}"    
+
+  PrivateInstance01: 
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          Install: ["Install"]
+        Install:
+          packages:
+            yum:
+              httpd: []
+          commands:
+            copy: 
+              command: !Join 
+              - ""
+              - - "aws s3 cp s3://samisami/index.html /var/www/html"
+          services:
+            sysvinit:
+              httpd:
+                enabled: "true"
+                ensureRunning: "true"
+    Properties:
+      InstanceType: !Ref PrivateInstance01Type
+      ImageId: !Ref PrivateInstance01LatestAmiId
+      KeyName: !Ref KeyName      
+      IamInstanceProfile:
+        !Join
+          - ''
+          - - ''
+            - !Ref AWS::StackName
+            - '-S3InstanceProfile'
+      SecurityGroupIds:
+        - !Ref PrivateInstanceSecurityGroup
+      SubnetId: 
+        Fn::ImportValue:
+          Fn::Sub: "${NetworkStackName}-PrivateSubnet1"
+      Tags:
+        - Key: Name
+          Value: PrivateInstance01-CET005
+      UserData: 
+          Fn::Base64: !Sub "#!/bin/bash -xe \n
+                             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource PrivateInstance01 --configsets Install --region  ${AWS::Region}"    
+
+  PrivateInstance02: 
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          Install: ["Install"]
+        Install:
+          packages:
+            yum:
+              httpd: []
+          commands:
+            copy: 
+              command: !Join 
+              - ""
+              - - "aws s3 cp s3://samisami/index.html /var/www/html"
+          services:
+            sysvinit:
+              httpd:
+                enabled: "true"
+                ensureRunning: "true"
+    Properties:
+      InstanceType: !Ref PrivateInstance02Type
+      ImageId: !Ref PrivateInstance02LatestAmiId
+      KeyName: !Ref KeyName
+      IamInstanceProfile:
+        !Join
+          - ''
+          - - ''
+            - !Ref AWS::StackName
+            - '-S3InstanceProfile'      
+      SecurityGroupIds:
+        - !Ref PrivateInstanceSecurityGroup
+      SubnetId: 
+        Fn::ImportValue:
+          Fn::Sub: "${NetworkStackName}-PrivateSubnet2"
+      Tags:
+        - Key: Name
+          Value: PrivateInstance02-CET005
+      UserData: 
+          Fn::Base64: !Sub "#!/bin/bash -xe \n
+                             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource PrivateInstance02 --configsets Install --region  ${AWS::Region}"                       
+  
+  BasionHostEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: 
+        Fn::ImportValue:
+          Fn::Sub: "${NetworkStackName}-VPC"
+
+  BasionHostEIPAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt BasionHostEIP.AllocationId
+      InstanceId: !Ref BastionHost    
+  
+  PublicInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: PublicInstanceSecurityGroup_CET005
+      GroupDescription: Public Instance security group (allow 80 from everywhere, 22 from VPC CIDR)
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: "${NetworkStackName}-VPC"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: !Ref VpcCIDR
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0          
+
+  PrivateInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: PrivateInstanceSecurityGroup_CET005
+      GroupDescription: Private Instance security group (allow 80, 22 from VPC CIDR)
+      VpcId: 
+        Fn::ImportValue:
+          Fn::Sub: "${NetworkStackName}-VPC"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: !Ref VpcCIDR
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: !Ref VpcCIDR   
+
+  BasionHostSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: "${NetworkStackName}-VPC"
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - CidrIp: !Sub '${BastionAllowedIP}/32'
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22 
+
+  S3Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: !Sub '${AWS::StackName}-s3Policy'
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action: s3:*
+            Resource: "*"
+    
+  S3InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Sub '${AWS::StackName}-S3InstanceProfile'
+      Path: "/"
+      Roles:
+      - Ref: S3Role        
+
+Outputs:
+  BastionHost:
+    Description: A Bastion host
+    Value: !Ref BastionHost 
+
+  PublicInstance01:
+    Description: Public Instance 01
+    Value: !Ref PublicInstance01       
+
+  PublicInstance02:
+    Description: Public Instance 02
+    Value: !Ref PublicInstance02
+  
+  PrivateInstance01:
+    Description: Private Instance 01
+    Value: !Ref PrivateInstance01
+  
+  PrivateInstance02:
+    Description: Private Instance 02
+    Value: !Ref PrivateInstance02
+
+  PublicInstanceSecurityGroup:
+    Description: Public Instance security group (allow 80 from everywhere, 22 from VPC CIDR)
+    Value: !Ref PublicInstanceSecurityGroup
+
+  PrivateInstanceSecurityGroup:
+    Description: Private Instance security group (allow 80, 22 from VPC CIDR)
+    Value: !Ref PrivateInstanceSecurityGroup
+  
