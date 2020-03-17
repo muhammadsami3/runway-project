@@ -373,7 +373,7 @@ Resources:
         - Key: Name
           Value: BastionHost-CET005 
   
-   BastionHost2: 
+  BastionHost2: 
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref BasionHostType
