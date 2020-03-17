@@ -373,18 +373,6 @@ Resources:
         - Key: Name
           Value: BastionHost-CET005 
   
-  BastionHost2: 
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: !Ref BasionHostType
-      ImageId: !Ref BasionHostAmiId
-      KeyName: !Ref KeyName      
-      SecurityGroupIds:
-        - !Ref BasionHostSecurityGroup
-      SubnetId: !Ref  BasionHostSubnetId 
-      Tags:
-        - Key: Name
-          Value: BastionHost-CET013 
 
   PublicInstance01: 
     Type: AWS::EC2::Instance
