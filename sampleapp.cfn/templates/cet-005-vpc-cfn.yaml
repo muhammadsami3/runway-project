@@ -67,6 +67,13 @@ Resources:
       Tags:
       - Key: Name
         Value: !Sub '${VPCName} - InternetGateway'
+  
+  myInternetGateway2:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: !Sub '${VPCName} - InternetGateway 2'
 
   PublicSubnet1:
     Type: AWS::EC2::Subnet
