@@ -9,7 +9,7 @@ pipeline {
       }   
       stage('runway') {
          steps {
-            sh label: '', script: 'export DEPLOY_ENVIRONMENT=cet-013 && runway deploy'
+            sh label: '', script: 'export CI=undefined && export DEPLOY_ENVIRONMENT=cet-013 && runway deploy'
              }
       }
    }
