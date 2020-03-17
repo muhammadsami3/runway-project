@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "hi hi hi" >> testPR
+echo `date` >> testPR
 git add . 
-git commit -m "PR demo"
+git commit -m "PR demo  `date`"
 git push
